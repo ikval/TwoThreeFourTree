@@ -65,12 +65,11 @@ class TwoThreeFourTree:
 
     def split(self, node):
         node.items.sort()
+        left_item = node.items[0]
+        middle_item = node.items[1]
+        right_item = node.items[2]
 
         if node.parent is None:
-            left_item = node.items[0]
-            middle_item = node.items[1]
-            right_item = node.items[2]
-
             new_left_node = TwoNode()
             new_left_node.item = left_item
             new_left_node.left_child = node.leftest_child
@@ -97,12 +96,7 @@ class TwoThreeFourTree:
             new_right_node.parent = new_root_node
 
             self.root = new_root_node
-            return True
         elif node.parent.type == "TwoNode":
-            left_item = node.items[0]
-            middle_item = node.items[1]
-            right_item = node.items[2]
-
             if middle_item < node.parent.item:
                 child_type = "Left"
             else:
@@ -145,8 +139,6 @@ class TwoThreeFourTree:
                 new_left_node.parent = node.parent
                 node.parent.right_child = new_right_node
                 new_right_node.parent = node.parent
-
-            return True
         elif node.parent.type == "ThreeNode":
             left_item = node.items[0]
             middle_item = node.items[1]
@@ -212,8 +204,6 @@ class TwoThreeFourTree:
                 node.parent.rightest_child = new_right_node
                 new_right_node.parent = node.parent
 
-            return True
-
     def insertItem(self, item):
         value = item.value
 
@@ -264,22 +254,45 @@ class TwoThreeFourTree:
             elif value > current.items[1]:
                 self._insert(value, current.right_child)
 
+    def retrieveItem(self, key):
+        if self.isEmpty():
+            return False, False
+        else:
+            return self._retrieve(key, self.root)
 
-## Testcode
+    def _retrieve(self, key, current):
+        if current is None:
+            return None, False
+        else:
+            if current.type == "TwoNode":
+                if key == current.item:
+                    return current.item, True
+                elif key < current.item:
+                    return self._retrieve(key, current.left_child)
+                elif key > current.item:
+                    return self._retrieve(key, current.right_child)
+            if current.type == "ThreeNode":
+                if key == current.items[0]:
+                    return current.items[0], True
+                elif key == current.items[1]:
+                    return current.items[1], True
+
+                elif key < current.items[0]:
+                    return self._retrieve(key, current.left_child)
+                elif current.items[0] < key < current.items[1]:
+                    return self._retrieve(key, current.middle_child)
+                elif key > current.items[1]:
+                    return self._retrieve(key, current.right_child)
+
+
+# Testcode
 if __name__ == "__main__":
     t = TwoThreeFourTree()
     print(t.isEmpty())
-    print(t.insertItem(createTreeItem(7, 7)))
-    print(t.insertItem(createTreeItem(9, 9)))
     print(t.insertItem(createTreeItem(8, 8)))
-    print(t.insertItem(createTreeItem(10, 10)))
-    print(t.insertItem(createTreeItem(11, 11)))
-    print(t.insertItem(createTreeItem(12, 12)))
-    print(t.insertItem(createTreeItem(6, 6)))
     print(t.insertItem(createTreeItem(5, 5)))
-    print(t.insertItem(createTreeItem(4, 4)))
-    print(t.insertItem(createTreeItem(3, 3)))
-    print(t.insertItem(createTreeItem(2, 2)))
-    print(t.insertItem(createTreeItem(1, 1)))
-    print(t.insertItem(createTreeItem(0, 0)))
+    print(t.insertItem(createTreeItem(10, 10)))
+    print(t.insertItem(createTreeItem(15, 15)))
     print(t.isEmpty())
+    print(t.retrieveItem(5)[0])
+    print(t.retrieveItem(5)[1])
