@@ -324,15 +324,67 @@ class TwoThreeFourTree:
                 func(current.items[2])
                 self._inorder(current.rightest_child, func)
 
+    def save(self):
+        return self._save(self.root)
+
+    def _save(self, current):
+        if current is None:
+            return "None"
+
+        if current.type == "TwoNode":
+            result = "{'root': [" + str(current.item) + "]"
+            left_child = self._save(current.left_child)
+            right_child = self._save(current.right_child)
+
+            if left_child != "None" or right_child != "None":
+                result += ", 'children': [" + left_child + ", " + right_child + "]"
+
+        elif current.type == "ThreeNode":
+            result = "{'root': " + str(current.items)
+            left_child = self._save(current.left_child)
+            middle_child = self._save(current.middle_child)
+            right_child = self._save(current.right_child)
+
+            if left_child != "None" or right_child != "None" or middle_child != "None":
+                result += ", 'children': [" + left_child + ", " + middle_child + ", " + right_child + "]"
+
+        elif current.type == "FourNode":
+            result = "{'root': " + str(current.items)
+            leftest_child = self._save(current.leftest_child)
+            left_child = self._save(current.left_child)
+            right_child = self._save(current.right_child)
+            rightest_child = self._save(current.rightest_child)
+
+            if leftest_child != "None" or left_child != "None" or right_child != "None" or rightest_child != "None":
+                result += ", 'children': [" + leftest_child + ", " + left_child + ", " + right_child + ", " + rightest_child + "]"
+
+        result += "}"
+        return result
+
 
 # Testcode
 if __name__ == "__main__":
     t = TwoThreeFourTree()
     print(t.isEmpty())
-    print(t.insertItem(createTreeItem(8,8)))
-    print(t.insertItem(createTreeItem(5,5)))
-    print(t.insertItem(createTreeItem(10,10)))
+    print(t.insertItem(createTreeItem(7, 7)))
+    print(t.insertItem(createTreeItem(9, 9)))
+    print(t.insertItem(createTreeItem(8, 8)))
+    print(t.insertItem(createTreeItem(10, 10)))
+    print(t.insertItem(createTreeItem(11, 11)))
+    print(t.insertItem(createTreeItem(12, 12)))
+    print(t.insertItem(createTreeItem(6, 6)))
+    print(t.insertItem(createTreeItem(5, 5)))
+    print(t.insertItem(createTreeItem(4, 4)))
+    print(t.insertItem(createTreeItem(3, 3)))
+    print(t.insertItem(createTreeItem(2, 2)))
+    print(t.insertItem(createTreeItem(1, 1)))
+    print(t.insertItem(createTreeItem(0, 0)))
+    print(t.insertItem(createTreeItem(13, 13)))
+    print(t.insertItem(createTreeItem(14, 14)))
+    print(t.insertItem(createTreeItem(15, 15)))
+    print(t.insertItem(createTreeItem(16, 16)))
     print(t.isEmpty())
     print(t.retrieveItem(5)[0])
     print(t.retrieveItem(5)[1])
     t.inorderTraverse(print)
+    print(t.save())
