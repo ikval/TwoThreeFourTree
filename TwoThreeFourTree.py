@@ -283,6 +283,22 @@ class TwoThreeFourTree:
                     return self._retrieve(key, current.middle_child)
                 elif key > current.items[1]:
                     return self._retrieve(key, current.right_child)
+            if current.type == "FourNode":
+                if key == current.items[0]:
+                    return current.items[0], True
+                elif key == current.items[1]:
+                    return current.items[1], True
+                elif key == current.items[2]:
+                    return current.items[2], True
+
+                elif key < current.items[0]:
+                    return self._retrieve(key, current.leftest_child)
+                elif current.items[0] < key < current.items[1]:
+                    return self._retrieve(key, current.left_child)
+                elif current.items[1] < key < current.items[2]:
+                    return self._retrieve(key, current.right_child)
+                elif key > current.items[2]:
+                    return self._retrieve(key, current.rightest_child)
 
     def inorderTraverse(self, func):
         self._inorder(self.root, func)
@@ -312,21 +328,11 @@ class TwoThreeFourTree:
 # Testcode
 if __name__ == "__main__":
     t = TwoThreeFourTree()
-    print(t.insertItem(createTreeItem(7, 7)))
-    print(t.insertItem(createTreeItem(8, 8)))
-    print(t.insertItem(createTreeItem(9, 9)))
-    print(t.insertItem(createTreeItem(10, 10)))
-    print(t.insertItem(createTreeItem(11, 11)))
-    print(t.insertItem(createTreeItem(12, 12)))
-    print(t.insertItem(createTreeItem(6, 6)))
-    print(t.insertItem(createTreeItem(5, 5)))
-    print(t.insertItem(createTreeItem(4, 4)))
-    print(t.insertItem(createTreeItem(3, 3)))
-    print(t.insertItem(createTreeItem(2, 2)))
-    print(t.insertItem(createTreeItem(1, 1)))
-    print(t.insertItem(createTreeItem(0, 0)))
-    print(t.insertItem(createTreeItem(14, 14)))
-    print(t.insertItem(createTreeItem(13, 13)))
-    print(t.insertItem(createTreeItem(15, 15)))
-    print(t.insertItem(createTreeItem(16, 16)))
+    print(t.isEmpty())
+    print(t.insertItem(createTreeItem(8,8)))
+    print(t.insertItem(createTreeItem(5,5)))
+    print(t.insertItem(createTreeItem(10,10)))
+    print(t.isEmpty())
+    print(t.retrieveItem(5)[0])
+    print(t.retrieveItem(5)[1])
     t.inorderTraverse(print)
