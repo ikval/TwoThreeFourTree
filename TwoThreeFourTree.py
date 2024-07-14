@@ -361,30 +361,90 @@ class TwoThreeFourTree:
         result += "}"
         return result
 
+    def load(self, tree):
+        self.root = self._load(tree)
+
+    def _load(self, tree):
+        if tree is None:
+            return None
+
+        root_list = tree['root']
+        nr_of_root_items = root_list.__len__()
+
+        if nr_of_root_items == 1:
+            root = TwoNode()
+            root.item = root_list[0]
+        elif nr_of_root_items == 2:
+            root = ThreeNode()
+            root.items = root_list
+        elif nr_of_root_items == 3:
+            root = FourNode()
+            root.items = root_list
+
+        if 'children' in tree and tree['children'] is not None:
+
+            if nr_of_root_items == 1:
+                left_child = self._load(tree['children'][0])
+                right_child = self._load(tree['children'][1])
+
+                root.left_child = left_child
+                root.left_child.parent = root
+
+                root.right_child = right_child
+                root.right_child.parent = root
+
+            elif nr_of_root_items == 2:
+                left_child = self._load(tree['children'][0])
+                middle_child = self._load(tree['children'][1])
+                right_child = self._load(tree['children'][2])
+
+                root.left_child = left_child
+                root.left_child.parent = root
+
+                root.middle_child = middle_child
+                root.middle_child.parent = root
+
+                root.right_child = right_child
+                root.right_child.parent = root
+
+            elif nr_of_root_items == 3:
+                leftest_child = self._load(tree['children'][0])
+                left_child = self._load(tree['children'][1])
+                right_child = self._load(tree['children'][2])
+                rightest_child = self._load(tree['children'][3])
+
+                root.leftest_child = leftest_child
+                root.leftest_child.parent = root
+
+                root.left_child = left_child
+                root.left_child.parent = root
+
+                root.right_child = right_child
+                root.right_child.parent = root
+
+                root.rightest_child = rightest_child
+                root.rightest_child.parent = root
+
+        return root
+
 
 # Testcode
 if __name__ == "__main__":
-    t = TwoThreeFourTree()
-    print(t.isEmpty())
-    print(t.insertItem(createTreeItem(7, 7)))
-    print(t.insertItem(createTreeItem(9, 9)))
-    print(t.insertItem(createTreeItem(8, 8)))
-    print(t.insertItem(createTreeItem(10, 10)))
-    print(t.insertItem(createTreeItem(11, 11)))
-    print(t.insertItem(createTreeItem(12, 12)))
-    print(t.insertItem(createTreeItem(6, 6)))
-    print(t.insertItem(createTreeItem(5, 5)))
-    print(t.insertItem(createTreeItem(4, 4)))
-    print(t.insertItem(createTreeItem(3, 3)))
-    print(t.insertItem(createTreeItem(2, 2)))
-    print(t.insertItem(createTreeItem(1, 1)))
-    print(t.insertItem(createTreeItem(0, 0)))
-    print(t.insertItem(createTreeItem(13, 13)))
-    print(t.insertItem(createTreeItem(14, 14)))
-    print(t.insertItem(createTreeItem(15, 15)))
-    print(t.insertItem(createTreeItem(16, 16)))
-    print(t.isEmpty())
-    print(t.retrieveItem(5)[0])
-    print(t.retrieveItem(5)[1])
-    t.inorderTraverse(print)
-    print(t.save())
+    if __name__ == "__main__":
+        t = TwoThreeFourTree()
+        print(t.insertItem(createTreeItem(7, 7)))
+        print(t.insertItem(createTreeItem(9, 9)))
+        print(t.insertItem(createTreeItem(8, 8)))
+        print(t.insertItem(createTreeItem(10, 10)))
+        print(t.insertItem(createTreeItem(11, 11)))
+        print(t.insertItem(createTreeItem(12, 12)))
+        print(t.insertItem(createTreeItem(6, 6)))
+        print(t.insertItem(createTreeItem(5, 5)))
+        print(t.insertItem(createTreeItem(4, 4)))
+        print(t.insertItem(createTreeItem(3, 3)))
+        print(t.insertItem(createTreeItem(2, 2)))
+        print(t.insertItem(createTreeItem(1, 1)))
+        t.inorderTraverse(print)
+        print(t.save())
+        t.load({'root': [8], 'children': [{'root': [4, 6], 'children': [{'root': [1, 2, 3]}, {'root': [5]}, {'root': [7]}]}, {'root': [10], 'children': [{'root': [9]}, {'root': [11, 12]}]}]})
+        print(t.save())
