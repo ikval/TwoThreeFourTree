@@ -38,17 +38,6 @@ class FourNode:
         self.rightest_child = None
 
 
-def isLeaf(node):
-    if node.type == "TwoNode" and node.left_child is None and node.right_child is None:
-        return True
-    elif node.type == "ThreeNode" and node.left_child is None and node.middle_child is None and node.right_child is None:
-        return True
-    elif node.type == "FourNode" and node.leftest_child is None and node.left_child is None and node.right_child is None and node.rightest_child is None:
-        return True
-    else:
-        return False
-
-
 class TwoThreeFourTree:
     def __init__(self):
         self.root = TwoNode()
@@ -59,6 +48,16 @@ class TwoThreeFourTree:
         elif self.root.type == "ThreeNode" and self.root.items.__len__() == 0:
             return True
         elif self.root.type == "FourNode" and self.root.items.__len__() == 0:
+            return True
+        else:
+            return False
+
+    def isLeaf(self, node):
+        if node.type == "TwoNode" and node.left_child is None and node.right_child is None:
+            return True
+        elif node.type == "ThreeNode" and node.left_child is None and node.middle_child is None and node.right_child is None:
+            return True
+        elif node.type == "FourNode" and node.leftest_child is None and node.left_child is None and node.right_child is None and node.rightest_child is None:
             return True
         else:
             return False
@@ -95,6 +94,7 @@ class TwoThreeFourTree:
             new_right_node.parent = new_root_node
 
             self.root = new_root_node
+
         elif node.parent.type == "TwoNode":
             if middle_item < node.parent.items[0]:
                 child_type = "Left"
@@ -135,11 +135,8 @@ class TwoThreeFourTree:
                 new_left_node.parent = node.parent
                 node.parent.right_child = new_right_node
                 new_right_node.parent = node.parent
-        elif node.parent.type == "ThreeNode":
-            left_item = node.items[0]
-            middle_item = node.items[1]
-            right_item = node.items[2]
 
+        elif node.parent.type == "ThreeNode":
             if middle_item < node.parent.items[0]:
                 child_type = "Left"
             elif node.parent.items[0] < middle_item < node.parent.items[1]:
@@ -201,31 +198,29 @@ class TwoThreeFourTree:
                 new_right_node.parent = node.parent
 
     def insertItem(self, item):
-        value = item.value
-
         if self.isEmpty():
-            self.root.items.append(value)
+            self.root.items.append(item.value)
         else:
-            self._insert(value, self.root)
+            self._insert(item.value, self.root)
 
         return True
 
     def _insert(self, value, current):
-        type = current.type
-
-        if type == "FourNode":
+        if current.type == "FourNode":
             self.split(current)
             self._insert(value, self.root)
 
-        if isLeaf(current) is True:
-            if type == "TwoNode":
+        if self.isLeaf(current) is True:
+
+            if current.type == "TwoNode":
                 current.__class__ = ThreeNode
                 current.type = "ThreeNode"
                 current.__setattr__('middle_child', None)
                 current.items.append(value)
                 current.items.sort()
                 return True
-            elif type == "ThreeNode":
+
+            elif current.type == "ThreeNode":
                 current.__class__ = FourNode
                 current.type = "FourNode"
                 current.__setattr__('leftest_child', None)
@@ -234,12 +229,16 @@ class TwoThreeFourTree:
                 current.items.sort()
                 current.__delattr__('middle_child')
                 return True
-        elif type == "TwoNode":
+
+        elif current.type == "TwoNode":
+
             if value < current.items[0]:
                 self._insert(value, current.left_child)
             elif value > current.items[0]:
                 self._insert(value, current.right_child)
-        elif type == "ThreeNode":
+
+        elif current.type == "ThreeNode":
+
             if value < current.items[0]:
                 self._insert(value, current.left_child)
             elif current.items[0] < value < current.items[1]:
@@ -320,6 +319,7 @@ class TwoThreeFourTree:
         node.items.append(node.left_child.items[0])
         node.items.append(node.right_child.items[0])
         node.items.sort()
+
         node.__setattr__('leftest_child', node.left_child.left_child)
         if node.leftest_child is not None:
             node.leftest_child.parent = node
@@ -332,6 +332,7 @@ class TwoThreeFourTree:
         node.right_child = node.right_child.left_child
         if node.right_child is not None:
             node.right_child.parent = node
+
         return node
 
     def mergeThreeNode(self, node, merge_direction):
@@ -386,6 +387,7 @@ class TwoThreeFourTree:
             node.right_child = new_node
             node.items.remove(node.items[1])
             node.__delattr__('middle_child')
+
         return node
 
     def mergeFourNode(self, node, merge_direction):
@@ -417,6 +419,7 @@ class TwoThreeFourTree:
             node.right_child = node.rightest_child
             node.__delattr__('leftest_child')
             node.__delattr__('rightest_child')
+
         elif merge_direction == "middle":
             new_node = FourNode()
             new_node.items.append(node.left_child.items[0])
@@ -445,6 +448,7 @@ class TwoThreeFourTree:
             node.right_child = node.rightest_child
             node.__delattr__('leftest_child')
             node.__delattr__('rightest_child')
+
         elif merge_direction == "right":
             new_node = FourNode()
             new_node.items.append(node.right_child.items[0])
@@ -473,17 +477,20 @@ class TwoThreeFourTree:
             node.right_child = new_node
             node.__delattr__('leftest_child')
             node.__delattr__('rightest_child')
+
         return node
 
-    def merge(self, node):  ### CHECK IF PARENTS ARE CORRECT
+    def merge(self, node):
         if node.parent.type == "TwoNode":
             self.mergeTwoNode(node.parent)
             return
+
         elif node.parent.type == "ThreeNode":
             if node == node.parent.left_child or node == node.parent.middle_child:
                 return self.mergeThreeNode(node.parent, "left")
             else:
                 return self.mergeThreeNode(node.parent, "right")
+
         elif node.parent.type == "FourNode":
             if node == node.parent.leftest_child or node == node.parent.left_child:
                 return self.mergeFourNode(node.parent, "left")
@@ -511,6 +518,7 @@ class TwoThreeFourTree:
                 node_to_donate.right_child = node_to_donate.middle_child
                 node_to_donate.items.remove(node_to_donate.items[1])
                 node_to_donate.__delattr__('middle_child')
+
             elif node == node.parent.left_child:
                 node.__class__ = ThreeNode
                 node.type = "ThreeNode"
@@ -528,6 +536,7 @@ class TwoThreeFourTree:
                 node_to_donate.left_child = node_to_donate.middle_child
                 node_to_donate.items.remove(node_to_donate.items[0])
                 node_to_donate.__delattr__('middle_child')
+
         elif node_to_donate.type == "FourNode":
             if node == node.parent.right_child:
                 node.__class__ = ThreeNode
@@ -548,6 +557,7 @@ class TwoThreeFourTree:
                 node_to_donate.left_child = node_to_donate.leftest_child
                 node_to_donate.__delattr__('rightest_child')
                 node_to_donate.__delattr__('leftest_child')
+
             elif node == node.parent.left_child:
                 node.__class__ = ThreeNode
                 node.type = "ThreeNode"
@@ -567,6 +577,7 @@ class TwoThreeFourTree:
                 node_to_donate.right_child = node_to_donate.rightest_child
                 node_to_donate.__delattr__('rightest_child')
                 node_to_donate.__delattr__('leftest_child')
+
         return node
 
     def _threeNodeRedistribute(self, node, node_to_donate):
@@ -588,6 +599,7 @@ class TwoThreeFourTree:
                 node_to_donate.right_child = node_to_donate.middle_child
                 node_to_donate.items.remove(node_to_donate.items[1])
                 node_to_donate.__delattr__('middle_child')
+
             elif node == node.parent.middle_child and node_to_donate == node.parent.right_child:
                 node.__class__ = ThreeNode
                 node.type = "ThreeNode"
@@ -605,6 +617,7 @@ class TwoThreeFourTree:
                 node_to_donate.left_child = node_to_donate.middle_child
                 node_to_donate.items.remove(node_to_donate.items[0])
                 node_to_donate.__delattr__('middle_child')
+
             elif node == node.parent.left_child:
                 node.__class__ = ThreeNode
                 node.type = "ThreeNode"
@@ -622,6 +635,7 @@ class TwoThreeFourTree:
                 node_to_donate.left_child = node_to_donate.middle_child
                 node_to_donate.items.remove(node_to_donate.items[0])
                 node_to_donate.__delattr__('middle_child')
+
             elif node == node.parent.right_child:
                 node.__class__ = ThreeNode
                 node.type = "ThreeNode"
@@ -639,6 +653,7 @@ class TwoThreeFourTree:
                 node_to_donate.right_child = node_to_donate.middle_child
                 node_to_donate.items.remove(node_to_donate.items[1])
                 node_to_donate.__delattr__('middle_child')
+
         elif node_to_donate.type == "FourNode":
             if node == node.parent.middle_child and node_to_donate == node.parent.left_child:
                 node.__class__ = ThreeNode
@@ -659,6 +674,7 @@ class TwoThreeFourTree:
                 node_to_donate.left_child = node_to_donate.leftest_child
                 node_to_donate.__delattr__('rightest_child')
                 node_to_donate.__delattr__('leftest_child')
+
             elif node == node.parent.middle_child and node_to_donate == node.parent.right_child:
                 node.__class__ = ThreeNode
                 node.type = "ThreeNode"
@@ -678,6 +694,7 @@ class TwoThreeFourTree:
                 node_to_donate.right_child = node_to_donate.rightest_child
                 node_to_donate.__delattr__('rightest_child')
                 node_to_donate.__delattr__('leftest_child')
+
             elif node == node.parent.left_child:
                 node.__class__ = ThreeNode
                 node.type = "ThreeNode"
@@ -697,6 +714,7 @@ class TwoThreeFourTree:
                 node_to_donate.right_child = node_to_donate.rightest_child
                 node_to_donate.__delattr__('rightest_child')
                 node_to_donate.__delattr__('leftest_child')
+
             elif node == node.parent.right_child:
                 node.__class__ = ThreeNode
                 node.type = "ThreeNode"
@@ -716,6 +734,7 @@ class TwoThreeFourTree:
                 node_to_donate.left_child = node_to_donate.leftest_child
                 node_to_donate.__delattr__('rightest_child')
                 node_to_donate.__delattr__('leftest_child')
+
         return node
 
     def _fourNodeRedistribute(self, node, node_to_donate):
@@ -737,6 +756,7 @@ class TwoThreeFourTree:
                 node_to_donate.left_child = node_to_donate.middle_child
                 node_to_donate.items.remove(node_to_donate.items[0])
                 node_to_donate.__delattr__('middle_child')
+
             elif node == node.parent.left_child and node_to_donate == node.parent.leftest_child:
                 node.__class__ = ThreeNode
                 node.type = "ThreeNode"
@@ -754,6 +774,7 @@ class TwoThreeFourTree:
                 node_to_donate.right_child = node_to_donate.middle_child
                 node_to_donate.items.remove(node_to_donate.items[1])
                 node_to_donate.__delattr__('middle_child')
+
             elif node == node.parent.left_child and node_to_donate == node.parent.right_child:
                 node.__class__ = ThreeNode
                 node.type = "ThreeNode"
@@ -771,6 +792,7 @@ class TwoThreeFourTree:
                 node_to_donate.left_child = node_to_donate.middle_child
                 node_to_donate.items.remove(node_to_donate.items[0])
                 node_to_donate.__delattr__('middle_child')
+
             elif node == node.parent.right_child and node_to_donate == node.parent.left_child:
                 node.__class__ = ThreeNode
                 node.type = "ThreeNode"
@@ -788,6 +810,7 @@ class TwoThreeFourTree:
                 node_to_donate.right_child = node_to_donate.middle_child
                 node_to_donate.items.remove(node_to_donate.items[1])
                 node_to_donate.__delattr__('middle_child')
+
             elif node == node.parent.right_child and node_to_donate == node.parent.rightest_child:
                 node.__class__ = ThreeNode
                 node.type = "ThreeNode"
@@ -805,6 +828,7 @@ class TwoThreeFourTree:
                 node_to_donate.left_child = node_to_donate.middle_child
                 node_to_donate.items.remove(node_to_donate.items[0])
                 node_to_donate.__delattr__('middle_child')
+
             elif node == node.parent.rightest_child:
                 node.__class__ = ThreeNode
                 node.type = "ThreeNode"
@@ -822,6 +846,7 @@ class TwoThreeFourTree:
                 node_to_donate.right_child = node_to_donate.middle_child
                 node_to_donate.items.remove(node_to_donate.items[1])
                 node_to_donate.__delattr__('middle_child')
+
         elif node_to_donate.type == "FourNode":
             if node == node.parent.leftest_child:
                 node.__class__ = ThreeNode
@@ -842,6 +867,7 @@ class TwoThreeFourTree:
                 node_to_donate.right_child = node_to_donate.rightest_child
                 node_to_donate.__delattr__('rightest_child')
                 node_to_donate.__delattr__('leftest_child')
+
             elif node == node.parent.left_child and node_to_donate == node.parent.leftest_child:
                 node.__class__ = ThreeNode
                 node.type = "ThreeNode"
@@ -861,6 +887,7 @@ class TwoThreeFourTree:
                 node_to_donate.left_child = node_to_donate.leftest_child
                 node_to_donate.__delattr__('rightest_child')
                 node_to_donate.__delattr__('leftest_child')
+
             elif node == node.parent.left_child and node_to_donate == node.parent.right_child:
                 node.__class__ = ThreeNode
                 node.type = "ThreeNode"
@@ -880,6 +907,7 @@ class TwoThreeFourTree:
                 node_to_donate.right_child = node_to_donate.rightest_child
                 node_to_donate.__delattr__('rightest_child')
                 node_to_donate.__delattr__('leftest_child')
+
             elif node == node.parent.right_child and node_to_donate == node.parent.left_child:
                 node.__class__ = ThreeNode
                 node.type = "ThreeNode"
@@ -899,6 +927,7 @@ class TwoThreeFourTree:
                 node_to_donate.left_child = node_to_donate.leftest_child
                 node_to_donate.__delattr__('rightest_child')
                 node_to_donate.__delattr__('leftest_child')
+
             elif node == node.parent.right_child and node_to_donate == node.parent.rightest_child:
                 node.__class__ = ThreeNode
                 node.type = "ThreeNode"
@@ -918,6 +947,7 @@ class TwoThreeFourTree:
                 node_to_donate.right_child = node_to_donate.rightest_child
                 node_to_donate.__delattr__('rightest_child')
                 node_to_donate.__delattr__('leftest_child')
+
             elif node == node.parent.rightest_child:
                 node.__class__ = ThreeNode
                 node.type = "ThreeNode"
@@ -937,10 +967,12 @@ class TwoThreeFourTree:
                 node_to_donate.left_child = node_to_donate.leftest_child
                 node_to_donate.__delattr__('rightest_child')
                 node_to_donate.__delattr__('leftest_child')
+
         return node
 
     def redistribute(self, node):
         node_to_donate = self.findSiblingToDonate(node)
+
         if node.parent.type == "TwoNode":
             return self._twoNodeRedistribute(node, node_to_donate)
         elif node.parent.type == "ThreeNode":
@@ -973,6 +1005,7 @@ class TwoThreeFourTree:
         if node_with_key == node_with_successor or node_with_successor == self.root or successor_key is None:
             node_with_key.items.remove(key)
             node_with_key.items.sort()
+
             if node_with_key.type == "ThreeNode":
                 node_with_key.__class__ = TwoNode
                 node_with_key.type = "TwoNode"
@@ -1164,7 +1197,8 @@ class TwoThreeFourTree:
         keys = list()
         self._inorder(self.root, keys.append)
         key_index = keys.index(key)
-        if key == keys[-1]:
+
+        if key == keys[-1]:  # Key doesn't have an inorder successor
             return None
         else:
             return keys[key_index + 1]
@@ -1272,11 +1306,3 @@ class TwoThreeFourTree:
 
         return root
 
-
-if __name__ == "__main__":
-    t = TwoThreeFourTree()
-    t.load({'root': [5], 'children': [{'root': [2], 'children': [{'root': [1]}, {'root': [3, 4]}]}, {'root': [12], 'children': [{'root': [10]}, {'root': [13, 15, 16]}]}]})
-    t.deleteItem(13)
-    t.deleteItem(10)
-    t.deleteItem(16)
-    print(t.save())
