@@ -1071,6 +1071,7 @@ class TwoThreeFourTree:
         else:
             if current.type == "TwoNode":
                 self.transformTwoNode(current)
+                self.transformNodesOnPath(key, self.root)
             elif current.type == "ThreeNode":
                 if key < current.items[0]:
                     self.transformNodesOnPath(key, current.left_child)
